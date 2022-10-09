@@ -2,6 +2,11 @@
 
 Most Inefficient Prime Number Sieve Web Server
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/madkins23/prime-sieve)](https://goreportcard.com/report/github.com/madkins23/prime-sieve)
+![GitHub](https://img.shields.io/github/license/madkins23/prime-sieve)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/madkins23/prime-sieve)
+[![Go Reference](https://pkg.go.dev/badge/github.com/madkins23/prime-sieve.svg)](https://pkg.go.dev/github.com/madkins23/prime-sieve)
+
 # Usage
 
 Build and run the `server.go` file.
