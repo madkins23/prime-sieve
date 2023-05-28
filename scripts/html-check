@@ -1,4 +1,12 @@
 #!/bin/bash
+# Check to make sure the 'official' display.html at this level
+# is the same as the copies in language-specific subdirectories.
+
+# The Go version must be down in its build directory since
+# it can't be embedded from another directory or a symbolic link.
 diff -s display.html go/cmd/display.html
+
+# The Dart version can't be embedded so it could be loaded at runtime
+# from this directory but for consistency it is also copied.
 diff -s display.html dart/bin/display.html
 
