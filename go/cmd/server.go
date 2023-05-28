@@ -2,10 +2,14 @@ package main
 
 import (
 	_ "embed"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 )
 
@@ -15,19 +19,21 @@ const PortNum = 8123
 //go:embed display.html
 var page string
 
+var server http.Server
+
 // Main program sets up web handlers and starts web server
 func main() {
 	fmt.Println("Starting " + AppName)
-	fmt.Println("Connect to http://localhost:" + strconv.Itoa(PortNum) + "/")
+	fmt.Println("> Connect to http://localhost:" + strconv.Itoa(PortNum) + "/")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Main page is in a constant defined below
-		fmt.Println("PageHandler")
+		fmt.Println("  PageHandler")
 		_, _ = fmt.Fprintf(w, page)
 	})
 	http.HandleFunc("/sieve/", func(w http.ResponseWriter, r *http.Request) {
 		// Sieve runs as server push and uses multiple server-side threads
-		fmt.Println("SieveHandler")
+		fmt.Println("  SieveHandler")
 		// These settings required for server push
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Cache-Control", "no-cache")
@@ -39,8 +45,14 @@ func main() {
 		// Generate infinite numbers in this handler thread to hold it open
 		generator(c)
 	})
-	if err := http.ListenAndServe(":"+strconv.Itoa(PortNum), nil); err != nil {
-		fmt.Printf("Error running web server: %s", err)
+	server = http.Server{Addr: ":" + strconv.Itoa(PortNum)}
+	handleInterrupts()
+	if err := server.ListenAndServe(); err != nil {
+		if errors.Is(err, http.ErrServerClosed) {
+			fmt.Println("! Server terminated")
+		} else {
+			fmt.Printf("* Error running web server: %s\n", err)
+		}
 	}
 
 	fmt.Println("Finished " + AppName)
@@ -52,7 +64,9 @@ func commander(w http.ResponseWriter, commands chan string) {
 	for {
 		cmd := <-commands
 		if _, err := w.Write([]byte("data: " + cmd + "\n\n")); err != nil {
-			panic(err)
+			fmt.Println("! Command channel closed")
+			_ = server.Close()
+			return
 		}
 
 		// Flush after every dump
@@ -121,4 +135,21 @@ func generator(commands chan string) {
 
 		commands <- "gen"
 	}
+}
+
+func handleInterrupts() {
+	userChannel := make(chan os.Signal)
+	signal.Notify(userChannel, os.Interrupt)
+	go func() {
+		<-userChannel
+		fmt.Println("! User interrupt")
+		_ = server.Close()
+	}()
+	sysChannel := make(chan os.Signal)
+	signal.Notify(sysChannel, syscall.SIGTERM)
+	go func() {
+		<-sysChannel
+		fmt.Println("! System interrupt")
+		_ = server.Close()
+	}()
 }
