@@ -3,11 +3,9 @@
 Most Inefficient Prime Number Sieve Web Server
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/madkins23/prime-sieve)](https://goreportcard.com/report/github.com/madkins23/prime-sieve)
-![GitHub](https://img.shields.io/github/license/madkins23/prime-sieve)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/madkins23/prime-sieve)
 [![Go Reference](https://pkg.go.dev/badge/github.com/madkins23/prime-sieve.svg)](https://pkg.go.dev/github.com/madkins23/prime-sieve)
 
-# Usage
+## Usage
 
 Build and run the `server.go` file.
 When it runs it will display a URL, e.g.
@@ -16,7 +14,7 @@ When it runs it will display a URL, e.g.
 
 Open this URL in a web browser.
 
-# Display
+## Display
 
 The prime number sieve creates a series of goroutines representing prime numbers.
 Integers are fed in from the top left and they pass through the chain of goroutines,
