@@ -1,0 +1,3 @@
+#!/bin/bash
+cp ../display.html cmd
+diff -s ../display.html cmd/display.html
