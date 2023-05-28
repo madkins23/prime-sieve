@@ -16,3 +16,7 @@
 
 # Goland
 .idea
+
+# Dart
+.dart_tool/
+
