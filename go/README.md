@@ -7,7 +7,7 @@ Most Inefficient Prime Number Sieve Web Server
 
 ## Usage
 
-Build and run the `server.go` file from the `go` directory:
+Build and run the `primes.go` file from the `go` directory:
 ```shell
 $ go run cmd/primes.go
 Starting Most Inefficient Prime Number Sieve Web Server
