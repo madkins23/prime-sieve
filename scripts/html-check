@@ -1,3 +1,4 @@
 #!/bin/bash
 diff -s display.html go/cmd/display.html
+diff -s display.html dart/bin/display.html
 
