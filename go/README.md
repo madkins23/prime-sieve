@@ -7,12 +7,14 @@ Most Inefficient Prime Number Sieve Web Server
 
 ## Usage
 
-Build and run the `server.go` file.
-When it runs it will display a URL, e.g.
-
-    Connect to http://localhost:8123
-
-Open this URL in a web browser.
+Build and run the `server.go` file from the `go` directory:
+```shell
+$ go run cmd/primes.go
+Starting Most Inefficient Prime Number Sieve Web Server
+>   Connect to http://localhost:42689/
+```
+Connect to the specified URL in a web browser.
+The port number will be different each time.
 
 ## Display
 
