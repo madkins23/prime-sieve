@@ -59,20 +59,23 @@ the HTML page and code are only responsible for displaying the filter operation.
 
 Commands from the application are:
 
-| Command                       | Action                                                                         |
-|-------------------------------|--------------------------------------------------------------------------------|
-| `gen <integer>`               | Display the integer operand in the first filter in the chain                   |
-| `make <integer>`              | Add a new filter at the end of the chain with the specified number             |
-| `generator <prime> <integer>` | Display the specified integer as currently being processed by the prime filter |
-| `pass <prime>`                | Show the prime filter passing the current integer (green)                      |
-| `fail <prime>`                | Show the prime filter failing the current integer (red)                        |
+| Command                    | Action                                                                                     |
+|----------------------------|--------------------------------------------------------------------------------------------|
+| `gen [<integer>]`          | Show a new integer being generated at the beginning of the chain or clear it if no integer |
+| `make <integer>`           | Add a new filter at the end of the chain with the specified integer                        |
+| `eval <prime> [<integer>]` | Show the prime filter evaluating the specified integer or clear it if no integer           |
+| `pass <prime>`             | Show the prime filter passing the current integer                                          |
+| `fail <prime>`             | Show the prime filter failing the current integer                                          |
 
 Filters are represented as boxes in the browser.
 Each box shows its prime in the top border,
-with the integer operands shown inside the box.
+with the integer operands shown inside the box as they are passed down the chain.
+Results of the filter's evaluation of the number are shown as:
+* `pass` number is bold and background is green
+* `fail` number is faded with a line through it and background is red
 
 ## Caveats
 
 * The display page and code have only been run on Chrome.
-* Development and testing of applications were done on Ubuntu Linux
+* Development and testing of applications were done on Ubuntu Linux.
 * Configuring development environments to build and run the code is an exercise for the reader.

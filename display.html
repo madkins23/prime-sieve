@@ -11,7 +11,7 @@
             border: 4px outset violet;
             padding: 3px;
             margin:  3px;
-            background-color: plum;
+            background-color: lavender;
             width: 50px;
             height: 50px;
         }
@@ -36,10 +36,13 @@
 
         div.box span.fail {
             background-color: red;
+            opacity: 0.5;
+            text-decoration: line-through;
         }
 
         div.box span.pass {
             background-color: lime;
+            font-weight: bold;
         }
     </style>
 
@@ -73,28 +76,40 @@
             const data = String(event.data).split(" ");
             const what = data.shift();
 
-            if (what === "gen") {
-                document.getElementById("generator")
-                    .getElementsByClassName("current")[0]
-                    .textContent = data.shift();
-            } else if (what === "make") {
-                document.getElementById("blackboard")
-                    .appendChild(makeFilter(data.shift()));
-            } else if (what === "generator" || what === "pass" || what === "fail") {
-                const id = String(data.shift());
-                const current = document.getElementById('filter-' + id)
-                    .getElementsByClassName("current")[0];
+            switch (what) {
+                case 'gen':
+                    document.getElementById("generator")
+                        .getElementsByClassName("current")[0]
+                        .textContent = data.shift();
+                    break;
+                case 'make':
+                    document.getElementById("blackboard")
+                        .appendChild(makeFilter(data.shift()));
+                    break;
+                case 'clear':
+                case 'eval':
+                case 'fail':
+                case 'pass':
+                    const id = String(data.shift());
+                    const current = document.getElementById('filter-' + id)
+                        .getElementsByClassName("current")[0];
 
-                if (what === 'generator') {
-                    current.className = 'current';
-                    current.textContent = data.shift();
-                } else if (what === 'pass') {
-                    current.className = 'current pass';
-                } else if (what === 'fail') {
-                    current.className = 'current fail';
-                }
-            } else {
-                console.log("*** Unknown *** " + what + " | " + data);
+                    switch (what) {
+                        case 'clear':
+                        case 'eval':
+                            current.className = 'current';
+                            current.textContent = what === 'clear' ? '' : data.shift();
+                            break;
+                        case 'fail':
+                            current.className = 'current fail';
+                            break;
+                        case 'pass':
+                            current.className = 'current pass';
+                            break;
+                    }
+                    break;
+                default:
+                    console.log("*** Unknown *** " + what + " | " + data);
             }
         };
 
