@@ -76,22 +76,3 @@ with the integer operands shown inside the box.
 * The display page and code have only been run on Chrome.
 * Development and testing of applications were done on Ubuntu Linux
 * Configuring development environments to build and run the code is an exercise for the reader.
-
-## Why?
-
-I'm fascinated by parallel processing models in software languages and operating systems.
-
-* The [Ada message-passing task](https://en.wikibooks.org/wiki/Ada_Programming/Tasking)
-was perhaps the first to be available to me.
-* The [memory-sharing weirdness](https://en.wikipedia.org/wiki/Copy-on-write)
-of some Unix and derivatives (such as Linux)
-[fork](https://man7.org/linux/man-pages/man2/fork.2.html) mechanisms.
-* Perl [ithreads](https://perldoc.perl.org/perlthrtut) which are not OS threads.
-* Go [goroutines](https://www.golinuxcloud.com/goroutine-vs-threads-golang/)
-which are also not OS threads though they may run on them.
-* Dart which breaks down [asynchronous processing](https://dart.dev/language/async)
-into an event-driven non-preemptive model based on futures.
-
-I know that a lot of people don't like to venture into concurrent programming,
-it's often difficult and error-prone.
-But it's so much fun!
