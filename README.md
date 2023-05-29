@@ -8,11 +8,13 @@ Most Inefficient Prime Number Sieve Web Server
 
 ## Background
 
-In the 1980s I saw a demonstration of an early Ada compiler that showed
-a prime number sieve made up of a chain of parallel tasks
+In the 1980s I saw a demonstration of an early Ada compiler
+([Intellimac](https://www.computerhistory.org/collections/catalog/102743800))
+that showed  a prime number sieve made up of a chain of parallel tasks
 displayed using some sort of primitive text-based display.
 It seemed really cool (remember, the 1980s) and since then I've
-implemented the concept off and on for my own enjoyment.
+re-implemented the concept off and on for my own enjoyment.
+
 Two such examples are presented in this repository:
 
 * Go
@@ -65,8 +67,31 @@ Commands from the application are:
 | `pass <prime>`                | Show the prime filter passing the current integer (green)                      |
 | `fail <prime>`                | Show the prime filter failing the current integer (red)                        |
 
+Filters are represented as boxes in the browser.
+Each box shows its prime in the top border,
+with the integer operands shown inside the box.
+
 ## Caveats
 
 * The display page and code have only been run on Chrome.
 * Development and testing of applications were done on Ubuntu Linux
 * Configuring development environments to build and run the code is an exercise for the reader.
+
+## Why?
+
+I'm fascinated by parallel processing models in software languages and operating systems.
+
+* The [Ada message-passing task](https://en.wikibooks.org/wiki/Ada_Programming/Tasking)
+was perhaps the first to be available to me.
+* The [memory-sharing weirdness](https://en.wikipedia.org/wiki/Copy-on-write)
+of some Unix and derivatives (such as Linux)
+[fork](https://man7.org/linux/man-pages/man2/fork.2.html) mechanisms.
+* Perl [ithreads](https://perldoc.perl.org/perlthrtut) which are not OS threads.
+* Go [goroutines](https://www.golinuxcloud.com/goroutine-vs-threads-golang/)
+which are also not OS threads though they may run on them.
+* Dart which breaks down [asynchronous processing](https://dart.dev/language/async)
+into an event-driven non-preemptive model based on futures.
+
+I know that a lot of people don't like to venture into concurrent programming,
+it's often difficult and error-prone.
+But it's so much fun!
