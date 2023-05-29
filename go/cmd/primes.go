@@ -104,17 +104,17 @@ func filter(commands chan string, c chan int, prime int) {
 	for {
 		// Get the number from the input channel.
 		number := <-c
-		args := strconv.Itoa(prime) + " " + strconv.Itoa(number)
+		id := strconv.Itoa(prime)
 		// Show the number under generator in the prime box and wait a bit.
-		commands <- "generator " + args
+		commands <- "generator " + id + " " + strconv.Itoa(number)
 		time.Sleep(time.Duration(250+rand.Intn(250)) * time.Millisecond)
 
 		if number%prime == 0 {
 			// Number is divisible by this prime, it 'fails' and gets destroyed.
-			commands <- "fail " + args
+			commands <- "fail " + id
 		} else {
 			// Number is not divisible, 'success' means going on the chain.
-			commands <- "pass " + args
+			commands <- "pass " + id
 			time.Sleep(time.Duration(250+rand.Intn(250)) * time.Millisecond)
 			commands <- "generator " + strconv.Itoa(prime)
 
