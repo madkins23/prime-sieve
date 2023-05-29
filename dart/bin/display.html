@@ -1,0 +1,128 @@
+<html lang="en">
+<head>
+    <title>Most Inefficient Prime Number Sieve</title>
+
+    <style>
+        div#blackboard {
+            background-color: linen;
+        }
+        div.box {
+            display: inline-block;
+            border: 4px outset violet;
+            padding: 3px;
+            margin:  3px;
+            background-color: lavender;
+            width: 50px;
+            height: 50px;
+        }
+        div.box span {
+            display: block;
+            height: 21px;
+            width: 46px;
+            padding: 2px;
+        }
+
+        div.box span.prime {
+            font-weight: bold;
+            background-color: gray;
+            color: azure;
+        }
+
+        div.box span.current {
+            float: right;
+            text-align: right;
+            vertical-align: bottom;
+        }
+
+        div.box span.fail {
+            background-color: red;
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        div.box span.pass {
+            background-color: lime;
+            font-weight: bold;
+        }
+    </style>
+
+    <script>
+        console.log("Starting JavaScript")
+
+        const source = new EventSource("/sieve/");
+
+        function makeFilter(id) {
+            const filter = document.createElement('div');
+
+            filter.id = "filter-" + id;
+            filter.className = 'box';
+
+            let span = document.createElement('span');
+
+            span.textContent = id;
+            span.className = 'prime';
+            filter.appendChild(span);
+
+            span = document.createElement('span');
+            span.className = 'current';
+            filter.appendChild(span);
+
+            return filter;
+        }
+
+        source.onmessage = function(event) {
+            console.log(source + ".onmessage('" + event.data + "')")
+
+            const data = String(event.data).split(" ");
+            const what = data.shift();
+
+            switch (what) {
+                case 'gen':
+                    document.getElementById("generator")
+                        .getElementsByClassName("current")[0]
+                        .textContent = data.shift();
+                    break;
+                case 'make':
+                    document.getElementById("blackboard")
+                        .appendChild(makeFilter(data.shift()));
+                    break;
+                case 'clear':
+                case 'eval':
+                case 'fail':
+                case 'pass':
+                    const id = String(data.shift());
+                    const current = document.getElementById('filter-' + id)
+                        .getElementsByClassName("current")[0];
+
+                    switch (what) {
+                        case 'clear':
+                        case 'eval':
+                            current.className = 'current';
+                            current.textContent = what === 'clear' ? '' : data.shift();
+                            break;
+                        case 'fail':
+                            current.className = 'current fail';
+                            break;
+                        case 'pass':
+                            current.className = 'current pass';
+                            break;
+                    }
+                    break;
+                default:
+                    console.log("*** Unknown *** " + what + " | " + data);
+            }
+        };
+
+        console.log("Finished JavaScript")
+    </script>
+</head>
+
+<body>
+<div id="blackboard">
+    <div id="generator" class="box">
+        <span class="prime">Gen#</span>
+        <span class="current"></span>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+#!/bin/bash
+# Copy the display.html file from its 'official' location in the parent directory.
+# The primes program could theoretically load the file from the parent directory,
+# but it is likely less error-prone (and consistent with the Go version)
+# to load it from the build/run directory.
+cp ../display.html bin
+diff -s ../display.html bin/display.html
