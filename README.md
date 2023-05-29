@@ -57,13 +57,13 @@ the HTML page and code are only responsible for displaying the filter operation.
 
 Commands from the application are:
 
-| Command                       | Action                                                       |
-|-------------------------------|--------------------------------------------------------------|
-| `gen <integer>`               | Display the integer operand in the first filter in the chain |
-| `make <integer>`              | Add a new filter at the end of the chain with the specified number |
+| Command                       | Action                                                                         |
+|-------------------------------|--------------------------------------------------------------------------------|
+| `gen <integer>`               | Display the integer operand in the first filter in the chain                   |
+| `make <integer>`              | Add a new filter at the end of the chain with the specified number             |
 | `generator <prime> <integer>` | Display the specified integer as currently being processed by the prime filter |
-| `pass <prime>` | Show the prime filter passing the current integer (green) |
-| `fail <prime>` | Show the prime filter failing the current integer (red) |
+| `pass <prime>`                | Show the prime filter passing the current integer (green)                      |
+| `fail <prime>`                | Show the prime filter failing the current integer (red)                        |
 
 ## Caveats
 
