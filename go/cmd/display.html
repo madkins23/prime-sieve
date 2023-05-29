@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 <head>
     <title>Most Inefficient Prime Number Sieve</title>
 
@@ -11,7 +11,7 @@
             border: 4px outset violet;
             padding: 3px;
             margin:  3px;
-            background-color: mauve;
+            background-color: plum;
             width: 50px;
             height: 50px;
         }
@@ -46,15 +46,15 @@
     <script>
         console.log("Starting JavaScript")
 
-        var source = new EventSource("/sieve/");
+        const source = new EventSource("/sieve/");
 
         function makeFilter(id) {
-            var filter = document.createElement('div');
+            const filter = document.createElement('div');
 
             filter.id = "filter-" + id;
             filter.className = 'box';
 
-            var span = document.createElement('span');
+            let span = document.createElement('span');
 
             span.textContent = id;
             span.className = 'prime';
@@ -70,27 +70,27 @@
         source.onmessage = function(event) {
             console.log(source + ".onmessage('" + event.data + "')")
 
-            var data = event.data.split(" ");
-            var what = data.shift();
+            const data = String(event.data).split(" ");
+            const what = data.shift();
 
-            if (what == "gen") {
+            if (what === "gen") {
                 document.getElementById("generator")
                     .getElementsByClassName("current")[0]
                     .textContent = data.shift();
-            } else if (what == "make") {
+            } else if (what === "make") {
                 document.getElementById("blackboard")
                     .appendChild(makeFilter(data.shift()));
-            } else if (what == "generator" || what == "pass" || what == "fail") {
-                var id = data.shift();
-                var current = document.getElementById('filter-' + id)
+            } else if (what === "generator" || what === "pass" || what === "fail") {
+                const id = String(data.shift());
+                const current = document.getElementById('filter-' + id)
                     .getElementsByClassName("current")[0];
 
-                if (what == 'generator') {
+                if (what === 'generator') {
                     current.className = 'current';
                     current.textContent = data.shift();
-                } else if (what == 'pass') {
+                } else if (what === 'pass') {
                     current.className = 'current pass';
-                } else if (what == 'fail') {
+                } else if (what === 'fail') {
                     current.className = 'current fail';
                 }
             } else {
