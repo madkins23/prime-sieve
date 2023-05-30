@@ -18,6 +18,9 @@ main() async {
 
     // Note: Use io.HttpServer instead of shelf/shelf_io package.
     server = await HttpServer.bind('localhost', 0);
+    final commandStream = CommandStream();
+    handleInterrupts(
+        commandStream); // Depends on the existence of the global server object.
     print("> Connect to http://localhost:${server.port}/");
     await server.forEach((HttpRequest request) async {
       switch (request.uri.path) {
@@ -29,12 +32,11 @@ main() async {
         case "/sieve/":
           print("    SieveHandler");
           // These settings are required for server push.
-          // There is no predefined ContentType for text/event-stream.
+          // Note: There is no predefined ContentType for text/event-stream.
           request.response.headers.add("Content-Type", "text/event-stream");
           request.response.headers.add("Cache-Control", "no-cache");
-          // Note: Must turn off buffering or we don't get immediate updates.
+          // Note: Must turn off buffering or the browser doesn't get immediate updates.
           request.response.bufferOutput = false;
-          final commandStream = CommandStream();
           sendCommands(request.response, commandStream.stream);
           generate(commandStream);
         case "/favicon.ico":
@@ -49,6 +51,12 @@ main() async {
   } finally {
     print("Finished $appName");
   }
+  /* TODO: Despite much experimentation I was unable to get the application to exit.
+   * Execution would get to this point and the main routine would exit,
+   * but something somewhere (likely an asynchronous wait) was always hanging things up.
+   * So finally I decided to use a bigger hammer...
+   */
+  exit(0);
 }
 
 /// Accept commands and add them to the controller stream.
@@ -111,13 +119,6 @@ class Filter {
   }
 }
 
-void sendCommands(HttpResponse response, Stream<String> commands) async {
-  await for (final command in commands) {
-    response.write("data: $command\n\n");
-    await response.flush();
-  }
-}
-
 void generate(CommandStream commandStream) async {
   int i = 2;
   Filter? filter;
@@ -129,5 +130,29 @@ void generate(CommandStream commandStream) async {
     filter.evaluate(i++);
 
     commandStream.send("gen");
+  }
+}
+
+/// Capture interrupts and stop service.
+void handleInterrupts(CommandStream cmdStream) {
+  ProcessSignal.sigint.watch().listen((signal) {
+    print("  User interrupt");
+    server.close(force: true);
+  });
+  ProcessSignal.sigterm.watch().listen((signal) {
+    print("!   System interrupt");
+    server.close(force: true);
+  });
+  /* Note: Android Studio uses SIGKILL to shut down Dart applications.
+   * It is not possible to call watch() on ProcessSignal.sigkill.
+   */
+}
+
+/// Pull command strings from the specified stream and write them to the open response writer.
+void sendCommands(HttpResponse response, Stream<String> commands) async {
+  await for (final command in commands) {
+    response.write("data: $command\n\n");
+    var info = response.connectionInfo;
+    await response.flush();
   }
 }
