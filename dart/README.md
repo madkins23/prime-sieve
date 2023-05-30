@@ -27,3 +27,21 @@ Starting Most Inefficient Prime Number Sieve Web Server
 ```
 Connect to the specified URL in a web browser.
 The port number will be different each time.
+
+## Caveats
+
+### Killing the Beast
+
+The Dart application doesn't seem to want to stop.
+User (`<ctrl>-C`) and system interrupts are captured and the server is shut down but the application just hangs.
+This is undoubtedly a problem with the code but a fair amount of experimentation never fixed the problem
+so a larger hammer (i.e. `exit()`) was employed.
+
+Note that Android Studio doesn't use either of these interrupts when killing an ongoing Dart application.
+Instead the IDE uses `SIGKILL` to assassinate the running application with extreme prejudice.
+Within Dart, however, it is not possible to capture that interrupt.
+
+In addition, killing the browser tab that shows the `display.html` animation does not stop the application.
+There doesn't seem to be any straightforward way to find out that the browser isn't out there any more.
+
+All of this is handled properly in the Go version of the application.

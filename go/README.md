@@ -27,7 +27,7 @@ These are typed conduits that can connect goroutines in a flexible manner.
 The combination of goroutines and channels was inspired by C.A.R. Hoare's
 [1978 paper](https://www.cs.cmu.edu/~crary/819-f09/Hoare78.pdf) and
 [1985 book](https://www.amazon.com/Communicating-sequential-processes-Prentice-Hall-International/dp/0131532715)
-_Communicating Sequential Processes_, [now available for free online](http://www.usingcsp.com/cspbook.pdf).
+_Communicating Sequential Processes_, [now available for free online](http://www.usingcsp.com/cspbook.pdf).[^1]
 
 The Go version of the Most Inefficient Prime Number Sieve Web Server uses goroutines and channels.
 
@@ -41,3 +41,8 @@ Starting Most Inefficient Prime Number Sieve Web Server
 ```
 Connect to the specified URL in a web browser.
 The port number will be different each time.
+
+[^1]: I've had a copy of the 1985 book since it came out.
+I've attempted to read it on several occasions but never made it through.[^2]
+
+[^2]: The same happened with _Dianetics_, but in that case I feel OK about it.

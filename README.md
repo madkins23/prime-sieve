@@ -53,7 +53,7 @@ The top level file is the official version,
 the subdirectory copies are for ease of access by the applications.
 
 The page includes Javascript that provides a display
-controlled by HTTP/2 Server Push from the application.
+controlled by commands sent from the application over the response connection.[^1]
 All the actual prime number filtering is done in the application,
 the HTML page and code are only responsible for displaying the filter operation.
 
@@ -79,3 +79,6 @@ Results of the filter's evaluation of the number are shown as:
 * The display page and code have only been run on Chrome.
 * Development and testing of applications were done on Ubuntu Linux.
 * Configuring development environments to build and run the code is an exercise for the reader.
+
+[^1]: I keep thinking of this as ["Server Push"](https://en.wikipedia.org/wiki/HTTP/2_Server_Push),
+but it's really ["server-sent events"](https://en.wikipedia.org/wiki/Server-sent_events).
