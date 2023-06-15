@@ -24,14 +24,13 @@
   (class display%
     (super-new)
 
+    (class/c (field [launch boolean?]))
     (init [launch #t])
     (define launch-browser launch)
 
     (inherit ready!)
     (inherit ready)
     
-    (define/override (get-type) "Web")
-
     (define/private (main-page)
       (log-web-debug "main-page")
       (response
@@ -55,7 +54,7 @@
       (define-values (dispatch _)
         (dispatch-rules
          [("") (lambda (_) (main-page))]
-         ; Note: extra string-arg handles case where trailing slash does not match
+         ; Note: extra string-arg handles case where trailing slash does not match.
          ; Just throw that argument away.
          [("sieve" (string-arg)) (lambda (_ __) (sieve-server))]))
       dispatch )
@@ -75,6 +74,7 @@
       (thread-wait server-thread)
       (log-web-debug "server thread terminated"))
 
+    ; For unit testing (at the current time).
     (class/c [kill! (->m void?)])
     (define/public (kill!) (kill-thread server-thread))))
 

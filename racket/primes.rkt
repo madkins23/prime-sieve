@@ -6,13 +6,11 @@
 
 (require "web-display.rkt")
 
-;; Main program starts here:
-(define display (new web-display%))
+(define app-name "Prime Sieve Web")
 
-(define app-name (string-append-immutable "Prime Sieve " (send display get-type)))
-
-(try
+(try ; Main program:
  (printf "Starting ~a~n" app-name)
+ (define display (new web-display%))
  (send display wait)
  (finally
   (printf "Finished ~a~n" app-name)))

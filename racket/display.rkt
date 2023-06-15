@@ -17,9 +17,6 @@
   (class object%
     (super-new)
 
-    (class/c (override [get-type (->m string?)]))
-    (define/public (get-type) (error 'type "TBD"))
-
     (define ready-semaphore (make-semaphore))
     (class/c [ready (->m void?)])
     (define/public-final (ready)
@@ -27,9 +24,6 @@
     (class/c [ready! (->m void?)])
     (define/public-final (ready!)
       (semaphore-post ready-semaphore))
-
-    (class/c (override [do-command (->m string? void?)]))
-    (define/public (do-command command)  (error 'do-command "TBD"))
 
     (define worker
       (thread
@@ -42,20 +36,15 @@
              ['done
               (log-dsp-debug "Done!")])))))
 
-    (class/c (override [command (->m string? void?)]))
+    (class/c [command (->m string? void?)])
     (define/public (command command)
       (thread-send worker command))
+
+    (class/c (override [do-command (->m string? void?)]))
+    (define/public (do-command command)  (error 'do-command "TBD"))
     
     (class/c (override [wait (->m void?)]))
-    (define/public (wait) (error 'wait "TBD"))
-
-    ))
-
-(define/contract display+c%
-  (class/c
-   [ready (->m void?)]
-   [ready! (->m void?)])
-  display%)
+    (define/public (wait) (error 'wait "TBD"))))
 
 (module+ test
   (define display (new display%))
