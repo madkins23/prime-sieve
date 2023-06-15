@@ -2,7 +2,6 @@
 
 (require racket/class)
 (require racket/file)
-(require racket/logging)
 (require web-server/dispatch)
 (require web-server/http/response-structs)
 (require web-server/http/request-structs)

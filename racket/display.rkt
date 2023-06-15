@@ -2,7 +2,6 @@
 
 (require racket/class)
 (require racket/contract)
-(require racket/logging)
 (require racket/match)
 
 (provide display%)
