@@ -10,3 +10,5 @@ diff -s display.html go/cmd/display.html
 # from this directory but for consistency it is also copied.
 diff -s display.html dart/bin/display.html
 
+# The Racket version.
+diff -s display.html racket/display.html
