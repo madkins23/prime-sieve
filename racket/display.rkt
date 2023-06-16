@@ -9,16 +9,13 @@
 
 (define-logger dsp)
 
-(module+ test
-  (require rackunit))
-
 (define display%
   (class object%
     (super-new)
 
     (define ready-semaphore (make-semaphore))
-    (class/c [ready (->m void?)])
-    (define/public-final (ready)
+    (class/c [ready? (->m void?)])
+    (define/public-final (ready?)
       (semaphore-wait ready-semaphore))
     (class/c [ready! (->m void?)])
     (define/public-final (ready!)
@@ -33,26 +30,12 @@
               (do-command str)
               (loop)]
              ['done
-              (log-dsp-debug "Done!")])))))
+              (log-dsp-debug "display worker thread done")])))))
 
     (class/c [command (->m string? void?)])
-    (define/public (command command)
+    (define/public-final (command command)
       (thread-send worker command))
 
+    (abstract do-command done?)
     (class/c (override [do-command (->m string? void?)]))
-    (define/public (do-command command)  (error 'do-command "TBD"))
-    
-    (class/c (override [wait (->m void?)]))
-    (define/public (wait) (error 'wait "TBD"))))
-
-(module+ test
-  (define display (new display%))
-
-  (check-exn  exn:fail:contract:arity?
-              (lambda () (send display command)))
-
-  (check-exn  exn:fail?
-              (lambda () (send display do-command "command")))
-  (check-exn  exn:fail:contract:arity?
-              (lambda () (send display do-command)))
-  )
+    (class/c (override [done? (->m void?)]))))

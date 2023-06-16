@@ -2,6 +2,7 @@
 
 (require racket/class)
 (require racket/file)
+(require racket/match)
 (require web-server/dispatch)
 (require web-server/http/response-structs)
 (require web-server/http/request-structs)
@@ -13,9 +14,6 @@
 
 (define-logger web #:parent dsp-logger)
 
-(module+ test
-  (require rackunit))
-
 (define main-page-html
   (file->string "display.html" #:mode 'text))
 
@@ -23,12 +21,8 @@
   (class display%
     (super-new)
 
-    (class/c (field [launch boolean?]))
-    (init [launch #t])
-    (define launch-browser launch)
-
     (inherit ready!)
-    (inherit ready)
+    (inherit ready?)
     
     (define/private (main-page)
       (log-web-debug "main-page")
@@ -38,6 +32,7 @@
        '() ; no headers
        (lambda (op) (display main-page-html op))))
 
+    (define command-thread #f)
     (define/private (sieve-server)
       (log-web-debug "sieve-server")
       (response
@@ -46,8 +41,24 @@
        (list
         (header #"Content-Type" #"text/event-stream")
         (header #"Cache-Control" #"no-cache"))
-       (lambda (op)
-         (write-bytes #"<html><body>sieve-server</body></html>" op))))
+       (lambda (command-port)
+         ; The output port closes when this function returns,
+         ; but we need it to remain open to continue sending commands.
+         ; Generate a thread to keep running and send commands on the port.
+         (set! command-thread
+               (thread
+                (lambda ()
+                  (let loop ()
+                    (match (thread-receive)
+                      [(? string? str)
+                       (fprintf command-port "data: ~a\n\n" str)
+                       (flush-output command-port)
+                       (loop)]
+                      ['done
+                       (log-web-debug "command thread done")])))))
+         (ready!)
+         ; Wait on the thread to complete before returning.
+         (thread-wait command-thread))))
 
     (define/private(dispatcher)
       (define-values (dispatch _)
@@ -61,33 +72,18 @@
     (define server-thread
       (thread
        (lambda()
-         (ready!)
          (serve/servlet
           (dispatcher)
           #:servlet-path ""
           #:servlet-regexp #rx""
           #:port 0
-          #:launch-browser? launch-browser))))
+          #:connection-close? #f
+          #:launch-browser? #t))))
 
-    (define/override (wait)
+    (define/override (do-command command)
+      (log-web-debug "command: ~a" command)
+      (thread-send command-thread command))
+    
+    (define/override (done?)
       (thread-wait server-thread)
-      (log-web-debug "server thread terminated"))
-
-    ; For unit testing (at the current time).
-    (class/c [kill! (->m void?)])
-    (define/public (kill!) (kill-thread server-thread))))
-
-(module+ test
-  (define display (new web-display% [launch #f]))
-  (send display ready)
-
-  (check-exn  exn:fail:contract:arity?
-              (lambda () (send display command)))
-
-  (check-exn  exn:fail?
-              (lambda () (send display do-command "command")))
-  (check-exn  exn:fail:contract:arity?
-              (lambda () (send display do-command)))
-
-  (send display kill!)
-  (send display wait))
+      (log-web-debug "server thread terminated"))))
