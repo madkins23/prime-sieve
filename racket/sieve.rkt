@@ -1,15 +1,19 @@
 #lang racket/base
 
 (require racket/class)
+(require racket/contract)
+
+(require "display.rkt")
 
 (provide generator)
 
-(define (wait-a-bit) (sleep (+ 0.25 (* 0.25 (random)))))
+(define/contract (wait-a-bit)
+  (-> void?)
+  (sleep (+ 0.25 (* 0.25 (random)))))
 
 (define-logger flt)
-(define-logger gen)
-
-(define (filter prime display)
+(define/contract (filter prime display)
+  (-> positive? display? void?)
   (log-flt-debug "start ~a" prime)
   (send display command (format "make ~a" prime))
   (let ([next-filter #f])
@@ -31,7 +35,9 @@
       (send display command (format "eval ~a" prime))
       (loop  (string->number (thread-receive))))))
 
-(define (generator display)
+(define-logger gen)
+(define/contract (generator display)
+  (-> display? void?)
   (log-gen-debug "start")
   (let ([first-filter #f])
     (for ([i (in-naturals 2)])

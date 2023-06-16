@@ -5,6 +5,7 @@
 (require racket/match)
 
 (provide display%)
+(provide display?)
 (provide dsp-logger)
 
 (define-logger dsp)
@@ -39,3 +40,5 @@
     (abstract do-command done?)
     (class/c (override [do-command (->m string? void?)]))
     (class/c (override [done? (->m void?)]))))
+
+(define (display? display) (is-a? display display%))

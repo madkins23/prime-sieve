@@ -60,6 +60,10 @@
          ; Wait on the thread to complete before returning.
          (thread-wait command-thread))))
 
+    (define/override (do-command command)
+      (log-web-debug "command: ~a" command)
+      (thread-send command-thread command))
+
     (define/private(dispatcher)
       (define-values (dispatch _)
         (dispatch-rules
@@ -79,10 +83,6 @@
           #:port 0
           #:connection-close? #f
           #:launch-browser? #t))))
-
-    (define/override (do-command command)
-      (log-web-debug "command: ~a" command)
-      (thread-send command-thread command))
     
     (define/override (done?)
       (thread-wait server-thread)
