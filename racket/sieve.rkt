@@ -3,9 +3,11 @@
 (require racket/class)
 (require racket/contract)
 
+(require try-catch-finally)
+
 (require "display.rkt")
 
-(provide generator)
+(provide sieve)
 
 (define/contract (wait-a-bit)
   (-> void?)
@@ -49,3 +51,19 @@
           (set! first-filter
                 (thread (lambda () (filter i display)))))
       (send display command "gen"))))
+
+; Run Prime Sieve with the specified display.
+; This is the core of any "main program".
+(define/contract (sieve app-name display)
+  (-> string? display? void?)
+  (try
+   (printf "Starting ~a~n" app-name)
+   (send display ready?)
+   (let ([gen-thread (thread (lambda () (generator display)))])
+     (send display done?)
+     (kill-thread gen-thread)
+     (thread-wait gen-thread)
+     (log-gen-debug "generator thread terminated"))
+   
+   (finally
+    (printf "Finished ~a~n" app-name))))
