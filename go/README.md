@@ -2,9 +2,6 @@
 
 Most Inefficient Prime Number Sieve Web Server
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/madkins23/prime-sieve)](https://goreportcard.com/report/github.com/madkins23/prime-sieve)
-[![Go Reference](https://pkg.go.dev/badge/github.com/madkins23/prime-sieve.svg)](https://pkg.go.dev/github.com/madkins23/prime-sieve)
-
 ## Go
 
 Go provides concurrent processing via the `goroutine` mechanism.
