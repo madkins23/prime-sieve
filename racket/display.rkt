@@ -15,8 +15,8 @@
     (super-new)
 
     (define ready-semaphore (make-semaphore))
-    (class/c [ready? (->m void?)])
-    (define/public-final (ready?)
+    (class/c [wait-ready (->m void?)])
+    (define/public-final (wait-ready)
       (semaphore-wait ready-semaphore))
     (class/c [ready! (->m void?)])
     (define/public-final (ready!)
@@ -37,8 +37,8 @@
     (define/public-final (command command)
       (thread-send worker command))
 
-    (abstract do-command done?)
+    (abstract do-command wait-done)
     (class/c (override [do-command (->m string? void?)]))
-    (class/c (override [done? (->m void?)]))))
+    (class/c (override [ wait-done (->m void?)]))))
 
 (define (display? display) (is-a? display display%))

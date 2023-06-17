@@ -22,7 +22,7 @@
     (super-new)
 
     (inherit ready!)
-    (inherit ready?)
+    (inherit wait-ready)
     
     (define/private (main-page)
       (log-web-debug "main-page")
@@ -89,7 +89,7 @@
         (log-web-debug "command: ~a" command)
         (thread-send command-thread command)))
     
-    (define/override (done?)
+    (define/override (wait-done)
       (log-web-debug "waiting for thread to end")
       (thread-wait server-thread)
       (log-web-debug "server thread terminated"))))

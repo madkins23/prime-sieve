@@ -58,12 +58,13 @@
   (-> string? display? void?)
   (try
    (printf "Starting ~a~n" app-name)
-   (send display ready?)
+   (send display wait-ready)
    (let ([gen-thread (thread (lambda () (generator display)))])
-     (send display done?)
+     (send display wait-done)
+     ; If the generator thread is not killed it just keeps going.
+     ; DrRacket can't stop it without killing DrRacket itself.
      (kill-thread gen-thread)
      (thread-wait gen-thread)
      (log-gen-debug "generator thread terminated"))
-   
    (finally
     (printf "Finished ~a~n" app-name))))
