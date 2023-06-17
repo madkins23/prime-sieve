@@ -10,21 +10,38 @@
 (define-logger gui #:parent dsp-logger)
 
 (define box-shim 10)
-(define box-size 25)
+(define box-size 50)
+(define font-size 12)
 
 (define gui-box%
   (class group-box-panel%
     (super-new
+     [alignment '(center center)]
+     [min-height box-size]
+     [min-width box-size]
      [stretchable-height box-size]
      [stretchable-width box-size])
+
+    (define msg-font
+      (send the-font-list find-or-create-font
+            font-size 'modern 'normal 'bold))
+    
     (define msg
       (new message%
            [parent this]
-           [label "XXX"]
-           [min-height box-size]
-           [min-width box-size]
-           [stretchable-height box-size]
-           [stretchable-width box-size]))))
+           [label ""]
+           [auto-resize #t]
+           [font msg-font]))
+    
+    (define/public (set-content str)
+      (send msg set-color "Black")
+      (send msg set-label str))
+
+    (define/public (pass)
+      (send msg set-color "Lime"))
+
+    (define/public (fail)
+      (send msg set-color "Red"))))
 
 (define gui-pane%
   (class pane%
@@ -72,12 +89,65 @@
     (send frame show #t)
     (ready!)
 
+    (define/private (gen [num ""])
+      (log-gui-debug "gen ~a" num)
+      (send gen-box set-content num))
+
+    (define prime-boxes (make-hash))
+    (define/private (make prime)
+      (log-gui-debug "make ~a ~a" prime hash)
+      (hash-set! prime-boxes prime
+                 (new gui-box% [label prime] [parent pane])))
+    
+    (define/private (eval prime [num ""])
+      (log-gui-debug "eval ~a ~a" prime num)
+      (send (hash-ref prime-boxes prime) set-content num))
+    
+    (define/private (pass prime)
+      (log-gui-debug "pass ~a" prime)
+      (send (hash-ref prime-boxes prime) pass))
+    
+    (define/private (fail prime)
+      (log-gui-debug "fail ~a" prime)
+      (send (hash-ref prime-boxes prime) fail))
+
     (define/override (do-command command)
-      (log-gui-debug "command: ~a" command))
+      (log-gui-debug "command: ~a" command)
+      (match (string-split command)
+        [(list "gen") (gen)]
+        [(list "gen" number) (gen number)]
+        [(list "make" prime) (make prime)]
+        [(list "eval" prime) (eval prime)]
+        [(list "eval" prime number) (eval prime number)]
+        [(list "pass" prime) (pass prime)]
+        [(list "fail" prime) (fail prime)]
+        [_ (log-gui-warning "command? ~a" command)]))
     
     (define/override (wait-done)
       (semaphore-wait done-semaphore))))
 
 (module+ test
   (define gd (new gui-display%))
+  (define (seq num)
+    (send gd command (format "gen ~a" num))
+    (sleep 1)
+    (send gd command (format "make ~a" num))
+    (sleep 1)
+    (send gd command (format "eval ~a ~a" num 63))
+    (sleep 1)
+    (send gd command (format "fail ~a" num))
+    (sleep 1)
+    (send gd command (format "eval ~a" num))
+    (sleep 1)
+    (send gd command (format "eval ~a ~a" num 79))
+    (sleep 1)
+    (send gd command (format "pass ~a" num))
+    (sleep 1)
+    (send gd command (format "eval ~a" num)))
+  (sleep 1)
+  (seq 13)
+  (seq 17)
+  (seq 23)
+  (send gd command "gen")
+  (send gd command "oops")
   (send gd wait-done))
