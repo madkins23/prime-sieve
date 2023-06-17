@@ -32,20 +32,23 @@
            [label ""]
            [auto-resize #t]
            [font msg-font]))
-    
+
+    (class/c [set-content (->m string? void?)])
     (define/public (set-content str)
       (send msg set-color "Black")
       (send msg set-label str))
 
+    (class/c [pass (->m void?)])
     (define/public (pass)
       (send msg set-color "Lime"))
 
+    (class/c [fail (->m void?)])
     (define/public (fail)
       (send msg set-color "Red"))))
 
-(define gui-pane%
-  (class pane%
-    (super-new)
+(define gui-panel%
+  (class panel%
+    (super-new [style '(vscroll)])
     (define/override (place-children info width height)
       (let ([x box-shim][y box-shim])
         (for/list ([child-info info])
@@ -84,31 +87,26 @@
              (define/augment (on-close)
                (log-gui-debug "frame close")
                (semaphore-post done-semaphore)))))))
-    (define pane (new gui-pane% [parent frame]))
-    (define gen-box (new gui-box% [label "Gen#"] [parent pane]))
+    (define panel (new gui-panel% [parent frame]))
+    (define gen-box (new gui-box% [label "Gen#"] [parent panel]))
     (send frame show #t)
     (ready!)
 
     (define/private (gen [num ""])
-      (log-gui-debug "gen ~a" num)
       (send gen-box set-content num))
 
     (define prime-boxes (make-hash))
     (define/private (make prime)
-      (log-gui-debug "make ~a ~a" prime hash)
       (hash-set! prime-boxes prime
-                 (new gui-box% [label prime] [parent pane])))
+                 (new gui-box% [label prime] [parent panel])))
     
     (define/private (eval prime [num ""])
-      (log-gui-debug "eval ~a ~a" prime num)
       (send (hash-ref prime-boxes prime) set-content num))
     
     (define/private (pass prime)
-      (log-gui-debug "pass ~a" prime)
       (send (hash-ref prime-boxes prime) pass))
     
     (define/private (fail prime)
-      (log-gui-debug "fail ~a" prime)
       (send (hash-ref prime-boxes prime) fail))
 
     (define/override (do-command command)
