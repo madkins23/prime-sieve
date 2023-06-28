@@ -1,11 +1,13 @@
 #lang racket/base
 
-(require racket/class)
-(require racket/gui)
-
-(require "display.rkt")
+(require racket/function
+         racket/gui
+         "display.rkt")
 
 (provide gui-display%)
+
+(module+ test
+  (require rackunit))
 
 (define-logger gui #:parent dsp-logger)
 
@@ -13,7 +15,11 @@
 (define box-size 50)
 (define font-size 12)
 
-(define gui-box%
+(define/contract gui-box%
+  (class/c
+   [fail (->m void?)]
+   [pass (->m void?)]
+   [set-content (->m string? void?)])
   (class group-box-panel%
     (super-new
      [alignment '(center center)]
@@ -25,7 +31,7 @@
     (define msg-font
       (send the-font-list find-or-create-font
             font-size 'modern 'normal 'bold))
-    
+
     (define msg
       (new message%
            [parent this]
@@ -33,18 +39,23 @@
            [auto-resize #t]
            [font msg-font]))
 
-    (class/c [set-content (->m string? void?)])
     (define/public (set-content str)
       (send msg set-color "Black")
       (send msg set-label str))
 
-    (class/c [pass (->m void?)])
     (define/public (pass)
       (send msg set-color "Lime"))
 
-    (class/c [fail (->m void?)])
     (define/public (fail)
       (send msg set-color "Red"))))
+
+(module+ test
+  (let* ([parent (new frame% [label "test"])]
+         [box (new gui-box% [label "test"][parent parent])])
+    (check-exn exn:fail? (thunk (send box fail 1)))
+    (check-exn exn:fail? (thunk (send box pass 1)))
+    (check-exn exn:fail? (thunk (send box set-content)))
+    (check-exn exn:fail? (thunk (send box set-content 1)))))
 
 (define gui-panel%
   (class panel%
@@ -99,13 +110,13 @@
     (define/private (make prime)
       (hash-set! prime-boxes prime
                  (new gui-box% [label prime] [parent panel])))
-    
+
     (define/private (eval prime [num ""])
       (send (hash-ref prime-boxes prime) set-content num))
-    
+
     (define/private (pass prime)
       (send (hash-ref prime-boxes prime) pass))
-    
+
     (define/private (fail prime)
       (send (hash-ref prime-boxes prime) fail))
 
@@ -120,11 +131,11 @@
         [(list "pass" prime) (pass prime)]
         [(list "fail" prime) (fail prime)]
         [_ (log-gui-warning "command? ~a" command)]))
-    
+
     (define/override (wait-done)
       (semaphore-wait done-semaphore))))
 
-(module+ test
+(module+ manual-test
   (define gd (new gui-display%))
   (define (seq num)
     (send gd command (format "gen ~a" num))
