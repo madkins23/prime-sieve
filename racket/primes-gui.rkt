@@ -5,4 +5,5 @@
 (require "sieve.rkt")
 (require "gui-display.rkt")
 
-(sieve "Prime Sieve GUI" (new gui-display%))
+(module+ main
+  (sieve "Prime Sieve GUI" (new gui-display%)))
