@@ -2,6 +2,7 @@
 
 (require racket/class
          racket/contract
+         racket/function
          racket/match)
 
 (provide display%
@@ -55,8 +56,8 @@
                         (define/override (do-command command) (displayln command))
                         (define/override (wait-done) (sleep 0.01))))])
     (check-true (display? display))
-    (check-exn exn:fail? (lambda() (send display command)))
-    (check-exn exn:fail? (lambda() (send display command 1)))
-    (check-exn exn:fail? (lambda() (send display ready! 1)))
-    (check-exn exn:fail? (lambda() (send display wait-ready 1)))
+    (check-exn exn:fail? (thunk (send display command)))
+    (check-exn exn:fail? (thunk (send display command 1)))
+    (check-exn exn:fail? (thunk (send display ready! 1)))
+    (check-exn exn:fail? (thunk (send display wait-ready 1)))
     ))
